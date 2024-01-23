@@ -43,9 +43,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier) {
-    // TODO: This state should be hoisted
+fun MyApp(modifier: Modifier = Modifier) {
+
     var shouldShowOnboarding by remember { mutableStateOf(true) }
+
+    Surface(modifier) {
+        if (shouldShowOnboarding) {
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
+        } else {
+            Greetings()
+        }
+    }
+}
+
+@Composable
+fun OnboardingScreen(
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -55,39 +70,10 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
         Text("Welcome to the Basics Codelab!")
         Button(
             modifier = Modifier.padding(vertical = 24.dp),
-            onClick = { shouldShowOnboarding = false }
+            onClick = onContinueClicked
         ) {
             Text("Continue")
         }
-    }
-}
-
-@Preview(showBackground = true, widthDp = 320, heightDp = 320)
-@Composable
-fun OnboardingPreview() {
-    PerformantListComposeTheme {
-        OnboardingScreen()
-    }
-}
-
-@Composable
-fun MyApp(modifier: Modifier = Modifier) {
-    var shouldShowOnboarding by remember { mutableStateOf(true) }
-
-    Surface(modifier) {
-        if (shouldShowOnboarding) {
-            OnboardingScreen(/* TODO */)
-        } else {
-            Greetings()
-        }
-    }
-}
-
-@Preview
-@Composable
-fun MyAppPreview() {
-    PerformantListComposeTheme {
-        MyApp(Modifier.fillMaxSize())
     }
 }
 
@@ -103,46 +89,54 @@ private fun Greetings(
     }
 }
 
+@Preview(showBackground = true, widthDp = 320, heightDp = 320)
+@Composable
+fun OnboardingPreview() {
+    PerformantListComposeTheme {
+        OnboardingScreen(onContinueClicked = {})
+    }
+}
+
+@Composable
+private fun Greeting(name: String) {
+
+    val expanded = remember { mutableStateOf(false) }
+
+    val extraPadding = if (expanded.value) 48.dp else 0.dp
+
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+    ) {
+        Row(modifier = Modifier.padding(24.dp)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(bottom = extraPadding)
+            ) {
+                Text(text = "Hello, ")
+                Text(text = name)
+            }
+            ElevatedButton(
+                onClick = { expanded.value = !expanded.value }
+            ) {
+                Text(if (expanded.value) "Show less" else "Show more")
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 320)
 @Composable
-private fun GreetingsPreview() {
+fun DefaultPreview() {
     PerformantListComposeTheme {
         Greetings()
     }
 }
 
+@Preview
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val expanded = remember { mutableStateOf(false) }
-    val extraPadding = if (expanded.value) 48.dp else 0.dp
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-    ) {
-        Row(modifier = Modifier.padding(24.dp)) {
-            Column(
-                modifier = modifier
-                    .padding(bottom = extraPadding)
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Text(text = "Hello ")
-                Text(text = name)
-            }
-
-            ElevatedButton(onClick = { expanded.value = !expanded.value }) {
-                Text(text = if (expanded.value) "Show less" else "Show more")
-            }
-
-        }
-
-    }
-}
-
-@Preview(showBackground = true, widthDp = 320)
-@Composable
-fun GreetingPreview() {
+fun MyAppPreview() {
     PerformantListComposeTheme {
-        MyApp()
+        MyApp(Modifier.fillMaxSize())
     }
 }
